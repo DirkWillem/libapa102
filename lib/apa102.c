@@ -179,12 +179,6 @@ void APA102_MultiStripes(struct APA102* strip, struct APA102_Frame** leds, int s
       led_frame[2] = leds[cctr]->g;
       led_frame[3] = leds[cctr]->r;
     } else {
-      /*if(ctr == stripe_size) {
-        cctr++;
-        if(cctr == clen) {
-          cctr = 0;
-        }
-      }*/
       led_frame[0] = 0b11100000;
       led_frame[1] = 0x00;
       led_frame[2] = 0x00;
