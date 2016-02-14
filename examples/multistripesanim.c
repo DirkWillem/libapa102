@@ -9,7 +9,7 @@ int main() {
   struct APA102* strip = APA102_Init(60);
 
   //Create the colors array (must be NULL-terminated)
-  struct APA102_LED* colors[5];
+  struct APA102_Frame* colors[5];
 
   colors[0] = APA102_CreateFrame(31, 0xFF, 0x0, 0x0);
   colors[1] = APA102_CreateFrame(31, 0xFF, 0xFF, 0x0);

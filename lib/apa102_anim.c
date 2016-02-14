@@ -20,7 +20,7 @@ struct APA102_Animation {
 struct BlinkAnimData {
   struct APA102_Animation* anim;
   struct APA102* strip;
-  struct APA102_LED* led;
+  struct APA102_Frame* led;
 
   int interval;
 };
@@ -28,7 +28,7 @@ struct BlinkAnimData {
 struct PulseAnimData {
   struct APA102_Animation* anim;
   struct APA102* strip;
-  struct APA102_LED* led;
+  struct APA102_Frame* led;
 
   int interval;
 };
@@ -36,7 +36,7 @@ struct PulseAnimData {
 struct StripesAnimData {
   struct APA102_Animation* anim;
   struct APA102* strip;
-  struct APA102_LED* led;
+  struct APA102_Frame* led;
 
   int interval, direction, stripe_size, gap_size;
 };
@@ -44,7 +44,7 @@ struct StripesAnimData {
 struct MultiStripesAnimData {
   struct APA102_Animation* anim;
   struct APA102* strip;
-  struct APA102_LED** leds;
+  struct APA102_Frame** leds;
 
   int interval, direction, stripe_size, gap_size;
 };
@@ -120,7 +120,7 @@ void* StripesAnimHandler(void* udata) {
 void* MultiStripesAnimHandler(void* udata) {
   struct MultiStripesAnimData* data;
   int offset, coffset, clen;
-  struct APA102_LED* ref;
+  struct APA102_Frame* ref;
 
   data = (struct MultiStripesAnimData*)udata;
 
@@ -169,7 +169,7 @@ void* MultiStripesAnimHandler(void* udata) {
   }
 }
 
-struct APA102_Animation* APA102_BlinkAnimation(struct APA102* strip, struct APA102_LED* led, int interval) {
+struct APA102_Animation* APA102_BlinkAnimation(struct APA102* strip, struct APA102_Frame* led, int interval) {
   struct APA102_Animation* anim;
   struct BlinkAnimData* data;
 
@@ -187,7 +187,7 @@ struct APA102_Animation* APA102_BlinkAnimation(struct APA102* strip, struct APA1
   return anim;
 }
 
-struct APA102_Animation* APA102_PulseAnimation(struct APA102* strip, struct APA102_LED* led, int interval) {
+struct APA102_Animation* APA102_PulseAnimation(struct APA102* strip, struct APA102_Frame* led, int interval) {
   struct APA102_Animation* anim;
   struct PulseAnimData* data;
 
@@ -205,7 +205,7 @@ struct APA102_Animation* APA102_PulseAnimation(struct APA102* strip, struct APA1
   return anim;
 }
 
-struct APA102_Animation* APA102_StripesAnimation(struct APA102* strip, struct APA102_LED* led, int interval, int stripe_size, int gap_size, int direction) {
+struct APA102_Animation* APA102_StripesAnimation(struct APA102* strip, struct APA102_Frame* led, int interval, int stripe_size, int gap_size, int direction) {
   struct APA102_Animation* anim;
   struct StripesAnimData* data;
 
@@ -226,7 +226,7 @@ struct APA102_Animation* APA102_StripesAnimation(struct APA102* strip, struct AP
   return anim;
 }
 
-struct APA102_Animation* APA102_MultiStripesAnimation(struct APA102* strip, struct APA102_LED** leds, int interval, int stripe_size, int gap_size, int direction) {
+struct APA102_Animation* APA102_MultiStripesAnimation(struct APA102* strip, struct APA102_Frame** leds, int interval, int stripe_size, int gap_size, int direction) {
   struct APA102_Animation* anim;
   struct MultiStripesAnimData* data;
 

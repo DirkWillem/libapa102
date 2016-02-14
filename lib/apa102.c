@@ -10,10 +10,10 @@ struct APA102 {
   int n_leds;
 };
 
-struct APA102_LED* APA102_CreateFrame(uint8_t brightness, uint8_t r, uint8_t g, uint8_t b) {
-  struct APA102_LED* led;
+struct APA102_Frame* APA102_CreateFrame(uint8_t brightness, uint8_t r, uint8_t g, uint8_t b) {
+  struct APA102_Frame* led;
 
-  led = (struct APA102_LED*)malloc(sizeof(struct APA102_LED));
+  led = (struct APA102_Frame*)malloc(sizeof(struct APA102_Frame));
 
   led->brightness = brightness;
   led->r = r;
@@ -56,7 +56,7 @@ void APA102_End() {
   }
 }
 
-void APA102_WriteLED(struct APA102_LED* led) {
+void APA102_WriteLED(struct APA102_Frame* led) {
   uint8_t led_frame[4];
 
   if(led->brightness > 31) {
@@ -71,7 +71,7 @@ void APA102_WriteLED(struct APA102_LED* led) {
   wiringPiSPIDataRW(0, led_frame, 4);
 }
 
-void APA102_Fill(struct APA102* strip, struct APA102_LED* led) {
+void APA102_Fill(struct APA102* strip, struct APA102_Frame* led) {
   uint8_t led_frame[4];
   int i;
 
@@ -91,7 +91,7 @@ void APA102_Fill(struct APA102* strip, struct APA102_LED* led) {
   APA102_End();
 }
 
-void APA102_Stripes(struct APA102* strip, struct APA102_LED* led, int stripe_size, int gap_size, int offset) {
+void APA102_Stripes(struct APA102* strip, struct APA102_Frame* led, int stripe_size, int gap_size, int offset) {
   uint8_t led_frame[4];
   int i, ctr;
 
@@ -135,10 +135,10 @@ void APA102_Stripes(struct APA102* strip, struct APA102_LED* led, int stripe_siz
   APA102_End();
 }
 
-void APA102_MultiStripes(struct APA102* strip, struct APA102_LED** leds, int stripe_size, int gap_size, int offset, int coffset) {
+void APA102_MultiStripes(struct APA102* strip, struct APA102_Frame** leds, int stripe_size, int gap_size, int offset, int coffset) {
   uint8_t led_frame[4];
   int i, ctr, cctr, clen;
-  struct APA102_LED* ref;
+  struct APA102_Frame* ref;
 
   ref = leds[0];
   clen = 0;
