@@ -2,6 +2,7 @@
 
 #include <stdlib.h>
 #include <stdint.h>
+#include <stdio.h>
 
 #include <wiringPi.h>
 #include <pthread.h>
@@ -47,6 +48,14 @@ struct MultiStripesAnimData {
   struct APA102_Frame** leds;
 
   int interval, direction, stripe_size, gap_size;
+};
+
+struct FadeAnimData {
+  struct APA102_Animation* anim;
+  struct APA102* strip;
+  struct APA102_Frame** leds;
+
+  int interval;
 };
 
 void* BlinkAnimHandler(void* udata) {
@@ -169,6 +178,63 @@ void* MultiStripesAnimHandler(void* udata) {
   }
 }
 
+void* FadeAnimHandler(void* udata) {
+  struct FadeAnimData* data;
+  int timer, idx, clen;
+  struct APA102_Frame* ref, * stop1, * stop2;
+
+  data = (struct FadeAnimData*)udata;
+  clen = 0;
+  ref = data->leds[0];
+  while(1) {
+    ref = data->leds[clen];
+    if(ref == 0) {
+      break;
+    }
+    clen++;
+  }
+
+  if(data->interval % 10 != 0) {
+    printf("Fade animation error: Interval must be multiple of 10");
+  }
+
+  if(clen < 2) {
+    printf("Fade animation error: At least 2 stops are required");
+  }
+
+  stop1 = data->leds[0];
+  stop2 = data->leds[1];
+  timer = 0;
+  idx = 1;
+
+  while(1) {
+    float percentage = (float)timer/(float)data->interval;
+    ref = APA102_CreateFrame(
+      stop1->brightness + (float)(stop2->brightness - stop1->brightness)*percentage,
+      stop1->r + (float)(stop2->r - stop1->r)*percentage,
+      stop1->g + (float)(stop2->g - stop1->g)*percentage,
+      stop1->b + (float)(stop2->b - stop1->b)*percentage
+    );
+    APA102_Fill(data->strip, ref);
+    delay(10);
+
+    timer += 10;
+    if(timer > data->interval) {
+      timer = 0;
+      stop1 = stop2;
+      idx++;
+      if(idx >= clen) {
+        idx = 0;
+      }
+      stop2 = data->leds[idx];
+    }
+    if(*(data->anim->kill)) {
+      break;
+    }
+  }
+  
+}
+
 struct APA102_Animation* APA102_BlinkAnimation(struct APA102* strip, struct APA102_Frame* led, int interval) {
   struct APA102_Animation* anim;
   struct BlinkAnimData* data;
@@ -244,6 +310,24 @@ struct APA102_Animation* APA102_MultiStripesAnimation(struct APA102* strip, stru
   anim->kill = (int*)malloc(sizeof(int));
   *(anim->kill) = 0;
   pthread_create(&anim->thread, 0, MultiStripesAnimHandler, (void*)data);
+  return anim;
+}
+
+struct APA102_Animation* APA102_FadeAnimation(struct APA102* strip, struct APA102_Frame** leds, int interval) {
+  struct APA102_Animation* anim;
+  struct FadeAnimData* data;
+
+  anim = (struct APA102_Animation*)malloc(sizeof(struct APA102_Animation));
+  data = (struct FadeAnimData*)malloc(sizeof(struct FadeAnimData));
+
+  data->anim = anim;
+  data->strip = strip;
+  data->leds = leds;
+  data->interval = interval;
+
+  anim->kill = (int*)malloc(sizeof(int));
+  *(anim->kill) = 0;
+  pthread_create(&anim->thread, 0, FadeAnimHandler, (void*)data);
   return anim;
 }
 

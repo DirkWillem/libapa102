@@ -48,5 +48,7 @@ struct APA102_Animation* APA102_PulseAnimation(struct APA102*, struct APA102_Fra
 struct APA102_Animation* APA102_StripesAnimation(struct APA102*, struct APA102_Frame*, int, int, int, int);
 //APA102_MultiStripesAnimation(APA102* strip, APA102_Frame** led, int interval, int stripe_size, int gap_size, int direction)
 struct APA102_Animation* APA102_MultiStripesAnimation(struct APA102*, struct APA102_Frame**, int, int, int, int);
+//APA102_FadeAnimation(APA102* strip, APA102_Frame** leds, int interval)
+struct APA102_Animation* APA102_FadeAnimation(struct APA102*, struct APA102_Frame**, int);
 
 #endif
